@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds"
+    debug="false">
+
+    <springProperty scope="context" name="appName"
+        source="app.name" />
+
+    <property name="CONSOLE_LOG_PATTERN"
+        value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${appName}--- [%15.15t] %-40.40logger{39} : %m%n" />
+    <property name="LOG_FILE" value="spring.log" />
+    <property name="FILE_LOG_PATTERN"
+        value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p --- [%t] %-40.40logger{39} : %m%n" />
+
+
+    <appender name="console"
+        class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <!-- 如果没有 file 属性，那么只会使用 fileNamePattern 的文件路径规则 -->
+        <!-- 如果即有 file 属性又有 fileNamePattern 属性，那么当天日志文件名使用 file 的配置，而以往的日志文件则会使用 
+            fileNamePattern 的配置 -->
+        <file>${LOG_FILE}</file>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件路径，定义了日志的切分方式，把每一天的日志归档到一个文件中，以防止日志填满整个磁盘空间 -->
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
+            </fileNamePattern>
+            <!-- 单个日志文件最大值，大于该值时则会根据 fileNamePattern 规则 %i 生成新的日志文件 -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- 只保留最近30天的日志 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+    <logger name="com.example.demo.controller" level="DEBUG"
+        additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="com.example.demo.service" level="TRACE"
+        additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="com.example.demo.mapper" level="TRACE"
+        additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <root level="debug">
+        <appender-ref ref="console" />
+        <appender-ref ref="file" />
+    </root>
+</configuration>
